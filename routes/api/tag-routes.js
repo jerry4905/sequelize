@@ -1,22 +1,12 @@
 const router = require('express').Router();
-const { Tag, Product, ProductTag } = require('../../models');
+const { Category, Tag, Product, ProductTag } = require('../../models');
 
 // The `/api/tags` endpoint
 
 router.get('/', (req, res) => {
   // find all tags
-  // be sure to include its associated Product data
-});
-
-router.get('/:id', (req, res) => {
-  // find a single tag by its `id`
   Tag.findAll({
-    attributes: [
-      'id',
-      'product_name',
-      'price',
-      'stock'
-    ]
+    attributes: { include: ['id', 'tag_name'] }
   })
     .then(tagData => res.json(tagData))
     .catch(err => {
@@ -24,7 +14,42 @@ router.get('/:id', (req, res) => {
       res.status(500).json(err);
     });
 });
-  // be sure to include its associated Product data
+
+router.get('/:id', (req, res) => {
+  // find a single tag by its `id`
+  Tag.findOne({
+    include: [
+      {
+        model: Tag,
+        attributes: ['id', 'tag_name']
+      },
+      {
+        model: Category,
+        attributes: ['id', 'category_name']
+      },
+      {
+        model: ProductTag,
+        attributes: ['id']
+      },
+      {
+        model: Product,
+        attributes: ['id', 'product_name', 'price', 'stock']
+      }
+    ]
+  })
+    .then(tagData => {
+      if (!tagData) {
+        res.status(404).json({ message: 'No user found with this id' });
+        return;
+      }
+      res.json(tagData);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+  
 
 
 router.post('/', (req, res) => {
