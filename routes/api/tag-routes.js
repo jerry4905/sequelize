@@ -18,6 +18,15 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   // find a single tag by its `id`
   Tag.findOne({
+    where: {
+      id: req.params.id
+    },
+    attributes: [
+      'id',
+      'post_url',
+      'title',
+      'created_at',
+    ],
     include: [
       {
         model: Tag,

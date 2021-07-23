@@ -26,6 +26,15 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   // find a single product by its `id`
   Product.findOne({
+    where: {
+      id: req.params.id
+    },
+    attributes: [
+      'id',
+      'post_url',
+      'title',
+      'created_at',
+    ],
     include: [
       {
         model: Category,
